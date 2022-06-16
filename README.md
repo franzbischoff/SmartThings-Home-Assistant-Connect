@@ -17,7 +17,7 @@ Currently cover, light, script, and switch device types are supported.
 - **cover** - Like emulated_hue, cover devices are treated like lights, so you have to say "turn on the shades" to open them, etc. Also supports setting the position.
 - **light** - All lights are treated like colored bulbs. You are able to use voice control to set the color.
 - **script** - Treated like a switch.
-- **switch** - Basic on and off. Surprise, surprise.
+- **switch** - Basic on and off.
 
 You can use the **smartthings_name** attribute in Home Assistant to set a custom name for your device in SmartThings. Otherwise, **friendly_name** will be used.
 
