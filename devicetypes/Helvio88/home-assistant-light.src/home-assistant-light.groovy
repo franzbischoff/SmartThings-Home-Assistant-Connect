@@ -1,7 +1,7 @@
 /**
  *  Home Assistant Light
  *
- *  Copyright 2017 Grace Mann
+ *  Copyright 2022 Helvio Pedreschi
  *
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  *  in compliance with the License. You may obtain a copy of the License at:
@@ -14,7 +14,7 @@
  *
  */
 metadata {
-	definition (name: "Home Assistant Light", namespace: "gurase", author: "Grace Mann") {
+	definition (name: "Home Assistant Light", namespace: "Helvio88", author: "Grace Mann") {
 		capability "Actuator"
 		capability "Color Control"
 		capability "Color Temperature"
