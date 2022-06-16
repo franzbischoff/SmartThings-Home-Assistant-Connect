@@ -19,8 +19,6 @@ metadata {
 		capability "Polling"
 		capability "Refresh"
 		capability "Sensor"
-		capability "Switch"
-		capability "Switch Level"
 		capability "Lock"
 	}
 
