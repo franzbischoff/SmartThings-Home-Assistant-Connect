@@ -1,5 +1,5 @@
 /**
- *  Home Assistant Cover
+ *  Home Assistant Door
  *
  *  Copyright 2022 Helvio Pedreschi
  *
@@ -14,39 +14,31 @@
  *
  */
 metadata {
-	definition (name: "Home Assistant Cover", namespace: "Helvio88", author: "Helvio Pedreschi") {
+	definition (name: "Home Assistant Door", namespace: "Helvio88", author: "Helvio Pedreschi") {
 		capability "Actuator"
 		capability "Polling"
 		capability "Refresh"
 		capability "Sensor"
-		capability "Switch"
-		capability "Switch Level"
-		capability "Window Shade"
+		capability "Door Control"
 	}
 
 
 	simulator { }
 
 	tiles(scale: 2) {
-    	multiAttributeTile(name:"shade", type: "lighting", width: 6, height: 4, canChangeIcon: true){
-			tileAttribute ("device.windowShade", key: "PRIMARY_CONTROL") {
-				attributeState "open", label:'${name}', action:"close", icon:"st.Home.home9", backgroundColor:"#00A0DC", nextState:"closing"
-				attributeState "closed", label:'${name}', action:"open", icon:"st.Home.home9", backgroundColor:"#ffffff", nextState:"opening"
-				attributeState "opening", label:'${name}', action:"open", icon:"st.Home.home9", backgroundColor:"#00A0DC", nextState:"closing"
-				attributeState "closing", label:'${name}', action:"close", icon:"st.Home.home9", backgroundColor:"#ffffff", nextState:"opening"
-			}
-			
-            tileAttribute ("device.level", key: "SLIDER_CONTROL") {
-				attributeState "level", action:"presetPosition"
+    	multiAttributeTile(name:"door", type: "doorControl", width: 6, height: 4, canChangeIcon: true){
+			tileAttribute ("device.doorControl", key: "PRIMARY_CONTROL") {
+				attributeState "open", label:'${name}', action:"close", backgroundColor:"#00A0DC", nextState:"closed"
+				attributeState "closed", label:'${name}', action:"open", backgroundColor:"#ffffff", nextState:"open"
 			}
 		}
     
-		standardTile("refresh", "device.switch", width: 2, height: 2, inactiveLabel: false, decoration: "flat") {
+		standardTile("refresh", "device.doorControl", width: 2, height: 2, inactiveLabel: false, decoration: "flat") {
 			state "default", label:'', action:"refresh.refresh", icon:"st.secondary.refresh"
 		}
 
-        main(["shade"])
-    	details(["shade", "shadeLevel", "levelSliderControl", "level", "refresh"])
+        main(["doorControl"])
+    	details(["doorControl"])
 
 	}
 }

@@ -47,7 +47,7 @@ def updated() {
 def initialize() {
     log.debug "initialize"
     
-    addChildren(covers ?: [], state.entities["covers"], "Home Assistant Cover")
+    addChildren(doors ?: [], state.entities["doors"], "Home Assistant Door")
     addChildren(lights ?: [], state.entities["lights"], "Home Assistant Light")
     addChildren(scripts ?: [], state.entities["scripts"], "Home Assistant Script")
     addChildren(switches ?: [], state.entities["switches"], "Home Assistant Switch")
@@ -71,7 +71,7 @@ def setupPage() {
 	return dynamicPage(name: "setup", title: "Home Assistant", install: true, uninstall: true) {
     	section {
         	paragraph "Tap below to see the list of devices available in Home Assistant and select the ones you want to connect to SmartThings."
-            input(name: "covers", type: "enum", required: false, title: "Covers", multiple: true, options: options.covers)
+            input(name: "doors", type: "enum", required: false, title: "Doors", multiple: true, options: options.doors)
             input(name: "lights", type: "enum", required: false, title: "Lights", multiple: true, options: options.lights)
             input(name: "scripts", type: "enum", required: false, title: "Scripts", multiple: true, options: options.scripts)
             input(name: "switches", type: "enum", required: false, title: "Switches", multiple: true, options: options.switches)
@@ -95,14 +95,14 @@ def getEntities() {
 	
     try {
         httpGet(params) { resp ->
-        	// Covers
-            def covers = [:]
+        	// Doors
+            def doors = [:]
             resp.data.findAll { 
             	it.entity_id.startsWith("cover.") 
             }.each {
-            	covers["${it.entity_id}"] = it
+            	doors["${it.entity_id}"] = it
             }
-            entities["covers"] = covers
+            entities["doors"] = doors
             
         	// Lights
         	def lights = [:]
@@ -185,12 +185,12 @@ def poll() {
 	getEntities()
     def devices = getChildDevices()
     
-    // Covers
+    // Doors
     devices.findAll {
-    	it.getTypeName() == "Home Assistant Cover"
+    	it.getTypeName() == "Home Assistant Door"
     }.each { device ->
     	def entityId = device.getDeviceNetworkId()
-    	def entity = state.entities.covers[entityId]
+    	def entity = state.entities.doors[entityId]
         
         device.sendEvent(name: "windowShade", value: entity.state)
         device.sendEvent(name: "level", value: entity.attributes.current_position)

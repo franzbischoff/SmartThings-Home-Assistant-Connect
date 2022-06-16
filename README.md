@@ -7,17 +7,18 @@ This is a fork from @gurase and I intend to add additional device types, as well
 I am picking up this project because I bought a Samsung Smart Fridge and would like to use the Widget to control my smart devices
 
 ## Roadmap:
-- Lock (Good progress)
 - Fan
 - Vacuum
+- Automation
 
 ## Supported Devices, Features, and Limitations
 Currently cover, light, script, and switch device types are supported.
 
 - **cover** - Like emulated_hue, cover devices are treated like lights, so you have to say "turn on the shades" to open them, etc. Also supports setting the position.
 - **light** - All lights are treated like colored bulbs. You are able to use voice control to set the color.
-- **script** - Treated like a switch.
-- **switch** - Basic on and off.
+- **script** - On/Off. Will attempt to change to a stateless button.
+- **switch** - On and Off.
+- **lock** - Lock and Unlock.
 
 You can use the **smartthings_name** attribute in Home Assistant to set a custom name for your device in SmartThings. Otherwise, **friendly_name** will be used.
 
