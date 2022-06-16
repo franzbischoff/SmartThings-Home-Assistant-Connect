@@ -26,20 +26,22 @@ metadata {
 	simulator { }
 
 	tiles(scale: 2) {
-    	multiAttributeTile(name:"door", type: "doorControl", width: 6, height: 4, canChangeIcon: true){
-			tileAttribute ("device.doorControl", key: "PRIMARY_CONTROL") {
-				attributeState "open", label:'${name}', action:"close", backgroundColor:"#00A0DC", nextState:"closed"
-				attributeState "closed", label:'${name}', action:"open", backgroundColor:"#ffffff", nextState:"open"
-			}
+		standardTile("toggle", "device.door", width: 2, height: 2) {
+			state("closed", label:'${name}', action:"door control.open", icon:"st.doors.garage.garage-closed", backgroundColor:"#00A0DC", nextState:"opening")
+			state("open", label:'${name}', action:"door control.close", icon:"st.doors.garage.garage-open", backgroundColor:"#e86d13", nextState:"closing")
+			state("opening", label:'${name}', icon:"st.doors.garage.garage-closed", backgroundColor:"#e86d13")
+			state("closing", label:'${name}', icon:"st.doors.garage.garage-open", backgroundColor:"#00A0DC")
+			
 		}
-    
-		standardTile("refresh", "device.doorControl", width: 2, height: 2, inactiveLabel: false, decoration: "flat") {
-			state "default", label:'', action:"refresh.refresh", icon:"st.secondary.refresh"
+		standardTile("open", "device.door", inactiveLabel: false, decoration: "flat") {
+			state "default", label:'open', action:"door control.open", icon:"st.doors.garage.garage-opening"
+		}
+		standardTile("close", "device.door", inactiveLabel: false, decoration: "flat") {
+			state "default", label:'close', action:"door control.close", icon:"st.doors.garage.garage-closing"
 		}
 
-        main(["doorControl"])
-    	details(["doorControl"])
-
+		main "toggle"
+		details(["toggle", "open", "close"])
 	}
 }
 
