@@ -44,18 +44,6 @@ metadata {
 		standardTile("refresh", "device.switch", width: 2, height: 2, inactiveLabel: false, decoration: "flat") {
 			state "default", label:'', action:"refresh.refresh", icon:"st.secondary.refresh"
 		}
-        
-        /*valueTile("shadeLevel", "device.level", width: 2, height: 1) {
-        	state "level", label: 'Shade is ${currentValue}% up'
-        }
-        
-        controlTile("levelSliderControl", "device.level", "slider", width: 4, height: 1) {
-        	state "level", action:"presetPosition"
-        }
-
-		valueTile("level", "device.level", inactiveLabel: false, decoration: "flat", width: 2, height: 2) {
-			state "level", label:'${currentValue} %', unit:"%", backgroundColor:"#ffffff"
-		}*/
 
         main(["shade"])
     	details(["shade", "shadeLevel", "levelSliderControl", "level", "refresh"])

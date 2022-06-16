@@ -42,7 +42,7 @@ metadata {
 		}
 
         main(["lock"])
-    	details(["rich-conntrol", "refresh"])
+    	details(["rich-control", "refresh"])
 
 	}
 }
