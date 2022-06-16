@@ -6,7 +6,7 @@ This is a fork from @gurase and I intend to add additional device types, as well
 
 I am picking up this project because I bought a Samsung Smart Fridge and would like to use the Widget to control my smart devices
 
-ROADMAP:
+## Roadmap:
 - Lock (Good progress)
 - Fan
 - Vacuum
