@@ -16,7 +16,6 @@
 metadata {
 	definition (name: "Home Assistant Switch", namespace: "Helvio88", author: "Grace Mann") {
 		capability "Actuator"
-		capability "Light"
         capability "Polling"
 		capability "Refresh"
 		capability "Sensor"
