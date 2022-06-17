@@ -14,7 +14,7 @@
  *
  */
 metadata {
-    definition (name: "Home Assistant Switch", namespace: "Helvio88", author: "Helvio Pedreschi") {
+    definition (name: "Home Assistant Fan", namespace: "Helvio88", author: "Helvio Pedreschi") {
         capability "Polling"
         capability "Refresh"
         capability "Switch Level"
