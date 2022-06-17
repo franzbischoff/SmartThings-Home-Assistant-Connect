@@ -14,41 +14,13 @@
  *
  */
 metadata {
-	definition (name: "Home Assistant Switch", namespace: "Helvio88", author: "Grace Mann") {
-		capability "Actuator"
+	definition (name: "Home Assistant Switch", namespace: "Helvio88", author: "Helvio Pedreschi") {
         capability "Polling"
 		capability "Refresh"
-		capability "Sensor"
 		capability "Switch"
 	}
-
-
-	simulator { }
-
-	tiles(scale: 2) {
-        multiAttributeTile(name:"rich-control", type: "switch", canChangeIcon: true){
-            tileAttribute ("device.switch", key: "PRIMARY_CONTROL") {
-                 attributeState "on", label:'${name}', action:"switch.off", icon:"st.Home.home30", backgroundColor:"#00A0DC", nextState:"off"
-                 attributeState "off", label:'${name}', action:"switch.on", icon:"st.Home.home30", backgroundColor:"#ffffff", nextState:"on"
- 			}
-        }
-
-        standardTile("switch", "device.switch", width: 2, height: 2, canChangeIcon: true) {
-            state "on", label:'${name}', action:"switch.off", icon:"st.Home.home30", backgroundColor:"#00A0DC", nextState:"on"
-            state "off", label:'${name}', action:"switch.on", icon:"st.Home.home30", backgroundColor:"#ffffff", nextState:"off"
-            state "offline", label:'${name}', icon:"st.Home.home30", backgroundColor:"#cccccc"
-        }
-
-        standardTile("refresh", "device.switch", inactiveLabel: false, height: 2, width: 2, decoration: "flat") {
-            state "default", label:"", action:"refresh.refresh", icon:"st.secondary.refresh"
-        }
-
-        main(["switch"])
-        details(["rich-control", "refresh"])
-    }
 }
 
-// handle commands
 def poll() {
 	parent.poll()
 }
