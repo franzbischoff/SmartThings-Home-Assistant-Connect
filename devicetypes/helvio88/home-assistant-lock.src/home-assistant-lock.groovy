@@ -14,29 +14,29 @@
  *
  */
 metadata {
-    definition (name: "Home Assistant Lock", namespace: "Helvio88", author: "Helvio Pedreschi") {
-        capability "Polling"
-        capability "Refresh"
-        capability "Lock"
-    }
+	definition (name: "Home Assistant Lock", namespace: "Helvio88", author: "Helvio Pedreschi") {
+		capability "Polling"
+		capability "Refresh"
+		capability "Lock"
+	}
 }
 
 def poll() {
-	    .poll()
+	parent.poll()
 }
 
 def refresh() {
-    poll()
+	poll()
 }
 
 def unlock() {
-    if (parent.postService("/api/services/lock/unlock", ["entity_id": device.deviceNetworkId])) {
-        sendEvent(name: "lock", value: "unlocked")
+	if (parent.postService("/api/services/lock/unlock", ["entity_id": device.deviceNetworkId])) {
+    	sendEvent(name: "lock", value: "unlocked")
     }
 }
 
 def lock() {
-    if (parent.postService("/api/services/lock/lock", ["entity_id": device.deviceNetworkId])) {
-        sendEvent(name: "lock", value: "locked")
+	if (parent.postService("/api/services/lock/lock", ["entity_id": device.deviceNetworkId])) {
+    	sendEvent(name: "lock", value: "locked")
     }
 }
