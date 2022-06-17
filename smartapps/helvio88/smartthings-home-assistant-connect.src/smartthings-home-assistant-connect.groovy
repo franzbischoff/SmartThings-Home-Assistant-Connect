@@ -48,10 +48,11 @@ def initialize() {
     log.debug "initialize"
 
     addChildren(doors ?: [], state.entities["doors"], "Home Assistant Door")
+    addChildren(fans ?: [], state.entities["fans"], "Home Assistant Fan")
     addChildren(lights ?: [], state.entities["lights"], "Home Assistant Light")
+    addChildren(locks ?: [], state.entities["locks"], "Home Assistant Lock")
     addChildren(scripts ?: [], state.entities["scripts"], "Home Assistant Script")
     addChildren(switches ?: [], state.entities["switches"], "Home Assistant Switch")
-    addChildren(locks ?: [], state.entities["locks"], "Home Assistant Lock")
 
     // Delete any that are no longer selected
     log.debug "selected devices: ${settings.collectMany { it.value }}"
@@ -72,10 +73,11 @@ def setupPage() {
         section {
             paragraph "Tap below to see the list of devices available in Home Assistant and select the ones you want to connect to SmartThings."
             input(name: "doors", type: "enum", required: false, title: "Doors", multiple: true, options: options.doors)
+            input(name: "fans", type: "enum", required: false, title: "Fans", multiple: true, options: options.doors)
             input(name: "lights", type: "enum", required: false, title: "Lights", multiple: true, options: options.lights)
+            input(name: "locks", type: "enum", required: false, title: "Locks", multiple: true, options: options.locks)
             input(name: "scripts", type: "enum", required: false, title: "Scripts", multiple: true, options: options.scripts)
             input(name: "switches", type: "enum", required: false, title: "Switches", multiple: true, options: options.switches)
-            input(name: "locks", type: "enum", required: false, title: "Locks", multiple: true, options: options.locks)
         }
     }
 }
@@ -104,6 +106,15 @@ def getEntities() {
             }
             entities["doors"] = doors
 
+            // Fans
+            def fans = [:]
+            resp.data.findAll { 
+                it.entity_id.startsWith("fan.") 
+            }.each {
+                fans["${it.entity_id}"] = it
+            }
+            entities["fans"] = fans
+
             // Lights
             def lights = [:]
             resp.data.findAll { 
@@ -112,6 +123,15 @@ def getEntities() {
                 lights["${it.entity_id}"] = it
             }
             entities["lights"] = lights
+
+            // Locks
+            def locks = [:]
+            resp.data.findAll { 
+                it.entity_id.startsWith("lock.") 
+            }.each {
+                locks["${it.entity_id}"] = it
+            }
+            entities["locks"] = locks
 
             // Scripts
             def scripts = [:]
@@ -131,15 +151,6 @@ def getEntities() {
             }
             entities["switches"] = switches
 
-            // Locks
-            def locks = [:]
-            resp.data.findAll { 
-                it.entity_id.startsWith("lock.") 
-            }.each {
-                locks["${it.entity_id}"] = it
-            }
-            entities["locks"] = locks
-
             state.entities = entities
             return entities
         }
@@ -157,7 +168,7 @@ def getOptions() {
         def values = [:]
 
         domainEntities.each { entityId, entity ->
-            values[entityId] = entity.attributes.smartthings_name ?: entity.attributes.friendly_name
+            values[entityId] = entity.attributes.friendly_name
         }
 
         values = values.sort { it.value }
@@ -174,7 +185,7 @@ def addChildren(chosenEntities, domain, deviceType) {
     chosenEntities.each { entityId ->
         if (!getChildDevice(entityId)) {
             device = addChildDevice(app.namespace, deviceType, entityId, null, 
-                [name: "Device.${entityId}", label:"${domain[entityId].attributes.smartthings_name ?: domain[entityId].attributes.friendly_name}", completedSetup: true])
+                [name: "Device.${entityId}", label:"${domain[entityId].attributes.friendly_name}", completedSetup: true])
             log.debug "created ${device.displayName} with id ${device.getDeviceNetworkId()}"
         }
     }
@@ -192,9 +203,19 @@ def poll() {
         def entityId = device.getDeviceNetworkId()
         def entity = state.entities.doors[entityId]
 
-        device.sendEvent(name: "windowShade", value: entity.state)
-        device.sendEvent(name: "level", value: entity.attributes.current_position)
-        device.sendEvent(name: "label", value: entity.attributes.smartthings_name ?: entity.attributes.friendly_name)
+        device.sendEvent(name: "door", value: entity.state)
+        device.sendEvent(name: "label", entity.attributes.friendly_name)
+    }
+
+    // Fans
+    devices.findAll {
+        it.getTypeName() == "Home Assistant Fan"
+    }.each { device ->
+        def entityId = device.getDeviceNetworkId()
+        def entity = state.entities.fans[entityId]
+
+        device.sendEvent(name: "level", value: entity.attributes.percentage)
+        device.sendEvent(name: "label", entity.attributes.friendly_name)
     }
 
     // Lights
@@ -218,7 +239,18 @@ def poll() {
         }
 
         device.sendEvent(name: "switch", value: entity.state)
-        device.sendEvent(name: "label", value: entity.attributes.smartthings_name ?: entity.attributes.friendly_name)
+        device.sendEvent(name: "label", value: entity.attributes.friendly_name)
+    }
+
+    // Locks
+    devices.findAll {
+        it.getTypeName() == "Home Assistant Lock"
+    }.each { device ->
+        def entityId = device.getDeviceNetworkId()
+        def entity = state.entities.locks[entityId]
+
+        device.sendEvent(name: "lock", value: entity.state)
+        device.sendEvent(name: "label", entity.attributes.friendly_name)
     }
 
     // Switches
@@ -229,7 +261,7 @@ def poll() {
         def entity = state.entities.subMap(["switches"]).collectEntries { it.value }[entityId]
 
         device.sendEvent(name: "switch", value: entity.state)
-        device.sendEvent(name: "label", value: entity.attributes.smartthings_name ?: entity.attributes.friendly_name)
+        device.sendEvent(name: "label", value: entity.attributes.friendly_name)
     }
 
     // Scripts
@@ -240,7 +272,7 @@ def poll() {
         def entity = state.entities.subMap(["scripts"]).collectEntries { it.value }[entityId]
 
         device.sendEvent(name: "script", value: entity.state)
-        device.sendEvent(name: "label", value: entity.attributes.smartthings_name ?: entity.attributes.friendly_name)
+        device.sendEvent(name: "label", value: entity.attributes.friendly_name)
     }
 }
 
