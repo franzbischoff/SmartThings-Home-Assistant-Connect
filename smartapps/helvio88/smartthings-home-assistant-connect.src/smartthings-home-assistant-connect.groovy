@@ -73,7 +73,7 @@ def setupPage() {
         section {
             paragraph "Tap below to see the list of devices available in Home Assistant and select the ones you want to connect to SmartThings."
             input(name: "doors", type: "enum", required: false, title: "Doors", multiple: true, options: options.doors)
-            input(name: "fans", type: "enum", required: false, title: "Fans", multiple: true, options: options.doors)
+            input(name: "fans", type: "enum", required: false, title: "Fans", multiple: true, options: options.fans)
             input(name: "lights", type: "enum", required: false, title: "Lights", multiple: true, options: options.lights)
             input(name: "locks", type: "enum", required: false, title: "Locks", multiple: true, options: options.locks)
             input(name: "scripts", type: "enum", required: false, title: "Scripts", multiple: true, options: options.scripts)
