@@ -17,8 +17,7 @@ metadata {
     definition (name: "Home Assistant Fan", namespace: "Helvio88", author: "Helvio Pedreschi") {
         capability "Polling"
         capability "Refresh"
-        capability "Switch Level"
-        capability "Switch"
+        capability "Fan Speed"
     }
 }
 
@@ -30,22 +29,8 @@ def refresh() {
     poll()
 }
 
-def on() {
-    if (parent.postService("/api/services/fan/turn_on", ["entity_id": device.deviceNetworkId])) {
-        sendEvent(name: "switch", value: "on")
-    }
-}
-
-def off() {
-    if (parent.postService("/api/services/fan/turn_off", ["entity_id": device.deviceNetworkId])) {
-        sendEvent(name: "switch", value: "off")
-    }
-}
-
-def setLevel(percentage) {
-    def state = (percentage == 0 ? "off" : "on")
-    if (parent.postService("/api/services/fan/turn_on", ["entity_id": device.deviceNetworkId, "percentage": percentage])) {
-        sendEvent(name: "level", value: percentage)
-        sendEvent(name: "switch", value: state)
+def setFanSpeed(speed) {
+    if (parent.postService("/api/services/fan/turn_on", ["entity_id": device.deviceNetworkId, "percentage": speed])) {
+        sendEvent(name: "fanSpeed", value: speed)
     }
 }
