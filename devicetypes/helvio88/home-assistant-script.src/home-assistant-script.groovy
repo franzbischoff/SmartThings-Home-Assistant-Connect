@@ -17,6 +17,33 @@ metadata {
     definition (name: "Home Assistant Script", namespace: "Helvio88", author: "Helvio Pedreschi") {
         capability "Momentary"
     }
+
+    tiles(scale: 2) {
+        multiAttributeTile(name:"rich-control", type: "switch", canChangeIcon: true) {
+            tileAttribute ("device.switch", key: "PRIMARY_CONTROL") {
+                attributeState "on", label:'${name}', action:"switch.off", icon:"st.Home.home30", backgroundColor:"#00A0DC", nextState:"turningOff"
+                attributeState "off", label:'${name}', action:"switch.on", icon:"st.Home.home30", backgroundColor:"#ffffff", nextState:"turningOn"
+                attributeState "turningOn", label:'${name}', action:"switch.off", icon:"st.Home.home30", backgroundColor:"#00A0DC", nextState:"turningOff"
+                attributeState "turningOff", label:'${name}', action:"switch.on", icon:"st.Home.home30", backgroundColor:"#ffffff", nextState:"turningOn"
+                attributeState "offline", label:'${name}', icon:"st.Home.home30", backgroundColor:"#cccccc"
+            }
+        }
+
+        standardTile("switch", "device.switch", width: 2, height: 2, canChangeIcon: true) {
+            state "on", label:'${name}', action:"switch.off", icon:"st.Home.home30", backgroundColor:"#00A0DC", nextState:"turningOff"
+            state "off", label:'${name}', action:"switch.on", icon:"st.Home.home30", backgroundColor:"#ffffff", nextState:"turningOn"
+            state "turningOn", label:'${name}', action:"switch.off", icon:"st.Home.home30", backgroundColor:"#00A0DC", nextState:"turningOff"
+            state "turningOff", label:'${name}', action:"switch.on", icon:"st.Home.home30", backgroundColor:"#ffffff", nextState:"turningOn"
+            state "offline", label:'${name}', icon:"st.Home.home30", backgroundColor:"#cccccc"
+    }
+
+    standardTile("refresh", "device.switch", inactiveLabel: false, height: 2, width: 2, decoration: "flat") {
+        state "default", label:"", action:"refresh.refresh", icon:"st.secondary.refresh"
+    }
+
+    main(["switch"])
+    details(["rich-control", "refresh"])
+    }
 }
 
 def push() {
