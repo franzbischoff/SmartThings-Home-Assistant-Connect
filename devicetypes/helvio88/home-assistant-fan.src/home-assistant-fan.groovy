@@ -43,5 +43,5 @@ def off() {
 }
 
 def setLevel(percentage) {
-
+    on()
 }
