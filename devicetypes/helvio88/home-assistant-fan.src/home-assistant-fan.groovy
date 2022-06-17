@@ -17,7 +17,8 @@ metadata {
     definition (name: "Home Assistant Switch", namespace: "Helvio88", author: "Helvio Pedreschi") {
         capability "Polling"
         capability "Refresh"
-        capability "Fan"
+        capability "Switch Level"
+        capability "Switch"
     }
 }
 
@@ -39,4 +40,8 @@ def off() {
     if (parent.postService("/api/services/fan/turn_off", ["entity_id": device.deviceNetworkId])) {
         sendEvent(name: "switch", value: "off")
     }
+}
+
+def setLevel(percentage) {
+
 }
