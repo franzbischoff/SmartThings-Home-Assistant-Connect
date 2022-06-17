@@ -14,29 +14,29 @@
  *
  */
 metadata {
-	definition (name: "Home Assistant Door", namespace: "Helvio88", author: "Helvio Pedreschi") {
-		capability "Polling"
-		capability "Refresh"
-		capability "Door Control"
-	}
+    definition (name: "Home Assistant Door", namespace: "Helvio88", author: "Helvio Pedreschi") {
+        capability "Polling"
+        capability "Refresh"
+        capability "Door Control"
+    }
 }
 
 def poll() {
-	parent.poll()
+    parent.poll()
 }
 
 def refresh() {
-	poll()
+    poll()
 }
 
 def open() {
-	if (parent.postService("/api/services/cover/open_cover", ["entity_id": device.deviceNetworkId])) {
-    	sendEvent(name: "door", value: "open")
+    if (parent.postService("/api/services/cover/open_cover", ["entity_id": device.deviceNetworkId])) {
+        sendEvent(name: "door", value: "open")
     }
 }
 
 def close() {
-	if (parent.postService("/api/services/cover/close_cover", ["entity_id": device.deviceNetworkId])) {
-    	sendEvent(name: "door", value: "closed")
+    if (parent.postService("/api/services/cover/close_cover", ["entity_id": device.deviceNetworkId])) {
+        sendEvent(name: "door", value: "closed")
     }
 }

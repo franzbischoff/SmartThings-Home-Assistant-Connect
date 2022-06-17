@@ -32,45 +32,45 @@ preferences {
 }
 
 def installed() {
-	log.debug "Installed with settings: ${settings}"
+    log.debug "Installed with settings: ${settings}"
 
-	initialize()
+    initialize()
 }
 
 def updated() {
-	log.debug "Updated with settings: ${settings}"
+    log.debug "Updated with settings: ${settings}"
 
-	unsubscribe()
-	initialize()
+    unsubscribe()
+    initialize()
 }
 
 def initialize() {
     log.debug "initialize"
-    
+
     addChildren(doors ?: [], state.entities["doors"], "Home Assistant Door")
     addChildren(lights ?: [], state.entities["lights"], "Home Assistant Light")
     addChildren(scripts ?: [], state.entities["scripts"], "Home Assistant Script")
     addChildren(switches ?: [], state.entities["switches"], "Home Assistant Switch")
     addChildren(locks ?: [], state.entities["locks"], "Home Assistant Lock")
-    
+
     // Delete any that are no longer selected
     log.debug "selected devices: ${settings.collectMany { it.value }}"
     def delete = getChildDevices().findAll { !settings.collectMany { it.value }.contains(it.getDeviceNetworkId()) }
-	log.warn "delete: ${delete}, deleting ${delete.size()} devices"
-	delete.each { deleteChildDevice(it.getDeviceNetworkId()) }
-    
+    log.warn "delete: ${delete}, deleting ${delete.size()} devices"
+    delete.each { deleteChildDevice(it.getDeviceNetworkId()) }
+
     // Polling
     poll()
     runEvery5Minutes("poll")
 }
 
 def setupPage() {
-	log.debug "setupPage"
-	def options = getOptions()
-    
-	return dynamicPage(name: "setup", title: "Home Assistant", install: true, uninstall: true) {
-    	section {
-        	paragraph "Tap below to see the list of devices available in Home Assistant and select the ones you want to connect to SmartThings."
+    log.debug "setupPage"
+    def options = getOptions()
+
+    return dynamicPage(name: "setup", title: "Home Assistant", install: true, uninstall: true) {
+        section {
+            paragraph "Tap below to see the list of devices available in Home Assistant and select the ones you want to connect to SmartThings."
             input(name: "doors", type: "enum", required: false, title: "Doors", multiple: true, options: options.doors)
             input(name: "lights", type: "enum", required: false, title: "Lights", multiple: true, options: options.lights)
             input(name: "scripts", type: "enum", required: false, title: "Scripts", multiple: true, options: options.scripts)
@@ -82,64 +82,64 @@ def setupPage() {
 
 // Get entities from Home Assistant
 def getEntities() {
-	log.debug "getEntities"
-    
-	def params = [
+    log.debug "getEntities"
+
+    def params = [
         uri: appSettings.hassUrl,
         path: "/api/states",
         headers: ["Authorization": "Bearer " + appSettings.token],
         contentType: "application/json"
     ]
-    
+
     def entities = [:]
-	
+
     try {
         httpGet(params) { resp ->
-        	// Doors
+            // Doors
             def doors = [:]
             resp.data.findAll { 
-            	it.entity_id.startsWith("cover.") 
+                it.entity_id.startsWith("cover.") 
             }.each {
-            	doors["${it.entity_id}"] = it
+                doors["${it.entity_id}"] = it
             }
             entities["doors"] = doors
-            
-        	// Lights
-        	def lights = [:]
+
+            // Lights
+            def lights = [:]
             resp.data.findAll { 
-            	it.entity_id.startsWith("light.") 
+                it.entity_id.startsWith("light.") 
             }.each {
-            	lights["${it.entity_id}"] = it
+                lights["${it.entity_id}"] = it
             }
             entities["lights"] = lights
-            
+
             // Scripts
             def scripts = [:]
             resp.data.findAll { 
-            	it.entity_id.startsWith("script.") 
+                it.entity_id.startsWith("script.") 
             }.each {
-            	scripts["${it.entity_id}"] = it
+                scripts["${it.entity_id}"] = it
             }
             entities["scripts"] = scripts
-            
+
             // Switches
             def switches = [:]
             resp.data.findAll { 
-            	it.entity_id.startsWith("switch.") 
+                it.entity_id.startsWith("switch.") 
             }.each {
-            	switches["${it.entity_id}"] = it
+                switches["${it.entity_id}"] = it
             }
             entities["switches"] = switches
-            
+
             // Locks
             def locks = [:]
             resp.data.findAll { 
-            	it.entity_id.startsWith("lock.") 
+                it.entity_id.startsWith("lock.") 
             }.each {
-            	locks["${it.entity_id}"] = it
+                locks["${it.entity_id}"] = it
             }
             entities["locks"] = locks
-            
+
             state.entities = entities
             return entities
         }
@@ -150,95 +150,95 @@ def getEntities() {
 
 // Populate Smartapp setup page with Home Assistant entities
 def getOptions() {
-	getEntities()
+    getEntities()
     def options = [:]
-    
+
     state.entities.each { domain, domainEntities ->
-    	def values = [:]
-        
-    	domainEntities.each { entityId, entity ->
-        	values[entityId] = entity.attributes.smartthings_name ?: entity.attributes.friendly_name
+        def values = [:]
+
+        domainEntities.each { entityId, entity ->
+            values[entityId] = entity.attributes.smartthings_name ?: entity.attributes.friendly_name
         }
-        
+
         values = values.sort { it.value }
         options["${domain}"] = values
     }
-    
+
     return options
 }
 
 def addChildren(chosenEntities, domain, deviceType) {
-	log.debug "addChildren"
-    
+    log.debug "addChildren"
+
     // Create devices for newly selected Home Assistant entities
     chosenEntities.each { entityId ->
-		if (!getChildDevice(entityId)) {
-			device = addChildDevice(app.namespace, deviceType, entityId, null, 
-            	[name: "Device.${entityId}", label:"${domain[entityId].attributes.smartthings_name ?: domain[entityId].attributes.friendly_name}", completedSetup: true])
-			log.debug "created ${device.displayName} with id ${device.getDeviceNetworkId()}"
-		}
-	}
+        if (!getChildDevice(entityId)) {
+            device = addChildDevice(app.namespace, deviceType, entityId, null, 
+                [name: "Device.${entityId}", label:"${domain[entityId].attributes.smartthings_name ?: domain[entityId].attributes.friendly_name}", completedSetup: true])
+            log.debug "created ${device.displayName} with id ${device.getDeviceNetworkId()}"
+        }
+    }
 }
 
 // Poll child devices
 def poll() {
-	getEntities()
+    getEntities()
     def devices = getChildDevices()
-    
+
     // Doors
     devices.findAll {
-    	it.getTypeName() == "Home Assistant Door"
+        it.getTypeName() == "Home Assistant Door"
     }.each { device ->
-    	def entityId = device.getDeviceNetworkId()
-    	def entity = state.entities.doors[entityId]
-        
+        def entityId = device.getDeviceNetworkId()
+        def entity = state.entities.doors[entityId]
+
         device.sendEvent(name: "windowShade", value: entity.state)
         device.sendEvent(name: "level", value: entity.attributes.current_position)
         device.sendEvent(name: "label", value: entity.attributes.smartthings_name ?: entity.attributes.friendly_name)
     }
-    
+
     // Lights
     devices.findAll {
-    	it.getTypeName() == "Home Assistant Light"
+        it.getTypeName() == "Home Assistant Light"
     }.each { device ->
-    	def entityId = device.getDeviceNetworkId()
-    	def entity = state.entities.lights[entityId]
-        
+        def entityId = device.getDeviceNetworkId()
+        def entity = state.entities.lights[entityId]
+
         if (entity.attributes.rgb_color) {
-        	device.sendEvent(name: "color", value: colorUtil.rgbToHex(entity.attributes.rgb_color[0], entity.attributes.rgb_color[1], entity.attributes.rgb_color[2]))
+            device.sendEvent(name: "color", value: colorUtil.rgbToHex(entity.attributes.rgb_color[0], entity.attributes.rgb_color[1], entity.attributes.rgb_color[2]))
         }
-        
+
         if (entity.attributes.color_temp) {
-        	device.sendEvent(name: "colorTemperature", value: (1000000).intdiv(entity.attributes.color_temp))
+            device.sendEvent(name: "colorTemperature", value: (1000000).intdiv(entity.attributes.color_temp))
         }
-        
+
         if (entity.attributes.brightness) {
-        	device.sendEvent(name: "level", value: entity.attributes.brightness / 255 * 100)
+            device.sendEvent(name: "level", value: entity.attributes.brightness / 255 * 100)
             device.sendEvent(name: "switch.setLevel", value: entity.attributes.brightness / 255 * 100)
         }
-        
+
         device.sendEvent(name: "switch", value: entity.state)
         device.sendEvent(name: "label", value: entity.attributes.smartthings_name ?: entity.attributes.friendly_name)
     }
-    
+
     // Switches
     devices.findAll {
-    	it.getTypeName() == "Home Assistant Switch"
+        it.getTypeName() == "Home Assistant Switch"
     }.each { device ->
-    	def entityId = device.getDeviceNetworkId()
-    	def entity = state.entities.subMap(["switches"]).collectEntries { it.value }[entityId]
-        
+        def entityId = device.getDeviceNetworkId()
+        def entity = state.entities.subMap(["switches"]).collectEntries { it.value }[entityId]
+
         device.sendEvent(name: "switch", value: entity.state)
         device.sendEvent(name: "label", value: entity.attributes.smartthings_name ?: entity.attributes.friendly_name)
     }
-    
+
     // Scripts
     devices.findAll {
-    	it.getTypeName() == "Home Assistant Script"
+        it.getTypeName() == "Home Assistant Script"
     }.each { device ->
-    	def entityId = device.getDeviceNetworkId()
-    	def entity = state.entities.subMap(["scripts"]).collectEntries { it.value }[entityId]
-        
+        def entityId = device.getDeviceNetworkId()
+        def entity = state.entities.subMap(["scripts"]).collectEntries { it.value }[entityId]
+
         device.sendEvent(name: "script", value: entity.state)
         device.sendEvent(name: "label", value: entity.attributes.smartthings_name ?: entity.attributes.friendly_name)
     }
@@ -246,17 +246,17 @@ def poll() {
 
 // Call Home Assistant services via HTTP POST request
 def postService(service, data) {
-	def params = [
+    def params = [
         uri: appSettings.hassUrl,
         path: service,
         headers: ["Authorization": "Bearer " + appSettings.token],
         requestContentType: "application/json",
         body: data
     ]
-    
+
     try {
         httpPost(params) { resp ->
-        	return true
+            return true
         }
     } catch (e) {
         log.error "something went wrong: $e"

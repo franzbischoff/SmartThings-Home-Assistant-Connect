@@ -14,29 +14,29 @@
  *
  */
 metadata {
-	definition (name: "Home Assistant Switch", namespace: "Helvio88", author: "Helvio Pedreschi") {
+    definition (name: "Home Assistant Switch", namespace: "Helvio88", author: "Helvio Pedreschi") {
         capability "Polling"
-		capability "Refresh"
-		capability "Switch"
-	}
+        capability "Refresh"
+        capability "Switch"
+    }
 }
 
 def poll() {
-	parent.poll()
+    parent.poll()
 }
 
 def refresh() {
-	poll()
+    poll()
 }
 
 def on() {
-	if (parent.postService("/api/services/homeassistant/turn_on", ["entity_id": device.deviceNetworkId])) {
-    	sendEvent(name: "switch", value: "on")
+    if (parent.postService("/api/services/homeassistant/turn_on", ["entity_id": device.deviceNetworkId])) {
+        sendEvent(name: "switch", value: "on")
     }
 }
 
 def off() {
-	if (parent.postService("/api/services/homeassistant/turn_off", ["entity_id": device.deviceNetworkId])) {
-    	sendEvent(name: "switch", value: "off")
+    if (parent.postService("/api/services/homeassistant/turn_off", ["entity_id": device.deviceNetworkId])) {
+        sendEvent(name: "switch", value: "off")
     }
 }

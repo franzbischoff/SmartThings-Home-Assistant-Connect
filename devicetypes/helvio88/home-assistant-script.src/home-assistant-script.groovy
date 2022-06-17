@@ -14,9 +14,9 @@
  *
  */
 metadata {
-	definition (name: "Home Assistant Script", namespace: "Helvio88", author: "Helvio Pedreschi") {
-		capability "Momentary"
-	}
+    definition (name: "Home Assistant Script", namespace: "Helvio88", author: "Helvio Pedreschi") {
+        capability "Momentary"
+    }
 }
 
 def push() {
