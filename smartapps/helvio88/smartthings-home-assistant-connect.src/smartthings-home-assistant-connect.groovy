@@ -214,7 +214,8 @@ def poll() {
         def entityId = device.getDeviceNetworkId()
         def entity = state.entities.fans[entityId]
 
-        device.sendEvent(name: "fanSpeed", value: entity.attributes.percentage)
+        device.sendEvent(name: "switch", value: entity.attributes.state)
+        device.sendEvent(name: "level", value: entity.attributes.percentage)
         device.sendEvent(name: "label", entity.attributes.friendly_name)
     }
 
