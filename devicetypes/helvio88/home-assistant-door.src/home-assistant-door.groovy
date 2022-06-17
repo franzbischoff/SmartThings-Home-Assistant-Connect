@@ -21,7 +21,6 @@ metadata {
 	}
 }
 
-// handle commands
 def poll() {
 	parent.poll()
 }
