@@ -43,9 +43,9 @@ def off() {
 }
 
 def setLevel(percentage) {
-    def state = (percent == 0 ? "off" : "on")
+    def state = (percentage == 0 ? "off" : "on")
     if (parent.postService("/api/services/fan/turn_off", ["entity_id": device.deviceNetworkId, "percentage": percentage])) {
-        sendEvent(name: "level", value: percent)
+        sendEvent(name: "level", value: percentage)
         sendEvent(name: "switch", value: state)
     }
 }
