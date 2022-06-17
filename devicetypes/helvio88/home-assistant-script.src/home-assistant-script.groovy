@@ -20,5 +20,5 @@ metadata {
 }
 
 def push() {
-
+    parent.postService("/api/services/homeassistant/turn_on", ["entity_id": device.deviceNetworkId])
 }
