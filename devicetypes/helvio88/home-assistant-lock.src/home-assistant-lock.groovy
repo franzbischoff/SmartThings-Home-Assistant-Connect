@@ -15,35 +15,9 @@
  */
 metadata {
 	definition (name: "Home Assistant Lock", namespace: "Helvio88", author: "Helvio Pedreschi") {
-		capability "Actuator"
 		capability "Polling"
 		capability "Refresh"
-		capability "Sensor"
 		capability "Lock"
-	}
-
-
-	simulator { }
-
-	tiles(scale: 2) {
-    	multiAttributeTile(name:"lock", type: "switch", width: 6, height: 4, canChangeIcon: true){
-			tileAttribute ("device.lock", key: "PRIMARY_CONTROL") {
-				attributeState "unlocked", label:'${name}', action:"close", icon:"st.Home.home9", backgroundColor:"#00A0DC", nextState:"locked"
-				attributeState "locked", label:'${name}', action:"open", icon:"st.Home.home9", backgroundColor:"#ffffff", nextState:"unlocked"
-			}
-			
-            tileAttribute ("device.level", key: "SLIDER_CONTROL") {
-				attributeState "level", action:"presetPosition"
-			}
-		}
-    
-		standardTile("refresh", "device.switch", width: 2, height: 2, inactiveLabel: false, decoration: "flat") {
-			state "default", label:"", action:"refresh.refresh", icon:"st.secondary.refresh"
-		}
-
-        main(["lock"])
-    	details(["rich-control", "refresh"])
-
 	}
 }
 
@@ -56,22 +30,14 @@ def refresh() {
 	poll()
 }
 
-def open() {
+def unlock() {
 	if (parent.postService("/api/services/lock/unlock", ["entity_id": device.deviceNetworkId])) {
-    	sendEvent(name: "switch", value: "on")
+    	sendEvent(name: "lock", value: "unlocked")
     }
 }
 
-def close() {
+def lock() {
 	if (parent.postService("/api/services/lock/lock", ["entity_id": device.deviceNetworkId])) {
-    	sendEvent(name: "switch", value: "off")
+    	sendEvent(name: "lock", value: "locked")
     }
-}
-
-def on() {
-	open()
-}
-
-def off() {
-	close()
 }

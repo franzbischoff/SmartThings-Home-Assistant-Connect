@@ -26,7 +26,7 @@ def poll() {
 }
 
 def refresh() {
-	poll()
+	parent.poll()
 }
 
 def on() {
