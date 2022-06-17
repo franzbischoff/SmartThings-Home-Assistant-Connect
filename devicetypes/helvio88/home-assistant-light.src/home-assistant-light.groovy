@@ -14,51 +14,10 @@
  *
  */
 metadata {
-	definition (name: "Home Assistant Light", namespace: "Helvio88", author: "Grace Mann") {
-		capability "Actuator"
-		capability "Color Control"
-		capability "Color Temperature"
-		capability "Light"
+	definition (name: "Home Assistant Light", namespace: "Helvio88", author: "Helvio Pedreschi") {
 		capability "Polling"
         capability "Refresh"
-		capability "Sensor"
 		capability "Switch"
-		capability "Switch Level"
-	}
-
-
-	simulator { }
-
-	tiles (scale: 2){
-		multiAttributeTile(name:"rich-control", type: "lighting", width: 6, height: 4, canChangeIcon: true){
-			tileAttribute ("device.switch", key: "PRIMARY_CONTROL") {
-				attributeState "on", label:'${name}', action:"switch.off", icon:"st.lights.philips.hue-single", backgroundColor:"#00A0DC", nextState:"turningOff"
-				attributeState "off", label:'${name}', action:"switch.on", icon:"st.lights.philips.hue-single", backgroundColor:"#ffffff", nextState:"turningOn"
-				attributeState "turningOn", label:'${name}', action:"switch.off", icon:"st.lights.philips.hue-single", backgroundColor:"#00A0DC", nextState:"turningOff"
-				attributeState "turningOff", label:'${name}', action:"switch.on", icon:"st.lights.philips.hue-single", backgroundColor:"#ffffff", nextState:"turningOn"
-			}
-			tileAttribute ("device.level", key: "SLIDER_CONTROL") {
-				attributeState "level", action:"switch level.setLevel", range:"(0..100)"
-            }
-			tileAttribute ("device.color", key: "COLOR_CONTROL") {
-				attributeState "color", action:"setColor"
-			}
-		}
-
-        controlTile("colorTempSliderControl", "device.colorTemperature", "slider", width: 4, height: 2, inactiveLabel: false, range:"(2000..6493)") {
-            state "colorTemperature", action:"color temperature.setColorTemperature"
-        }
-
-        valueTile("colorTemp", "device.colorTemperature", inactiveLabel: false, decoration: "flat", width: 2, height: 2) {
-            state "colorTemperature", label: 'WHITES'
-        }
-
-		standardTile("refresh", "device.refresh", height: 2, width: 2, inactiveLabel: false, decoration: "flat") {
-			state "default", label:"", action:"refresh.refresh", icon:"st.secondary.refresh"
-		}
-
-		main(["rich-control"])
-		details(["rich-control", "colorTempSliderControl", "colorTemp", "reset", "refresh"])
 	}
 }
 
@@ -70,27 +29,6 @@ def refresh() {
 	poll()
 }
 
-def setColor(value) {
-	def hex = colorUtil.hslToHex(value.hue as int, value.saturation as int)
-    def rgb = value.hex ?: colorUtil.hexToRgb(hex)
-    
-    if (value.red && value.green && value.blue) {
-    	rgb = [value.red, value.green, value.blue]
-    }
-    
-    if (parent.postService("/api/services/light/turn_on", ["entity_id": device.deviceNetworkId, "rgb_color": rgb])) {
-    	sendEvent(name: "color", value: hex)
-        sendEvent(name: "switch", value: "on")
-    }
-}
-
-def setColorTemperature(value) {
-	if (parent.postService("/api/services/light/turn_on", ["entity_id": device.deviceNetworkId, "kelvin": value])) {
-    	sendEvent(name: "colorTemperature", value: value)
-        sendEvent(name: "switch", value: "on")
-    }
-}
-
 def on() {
 	if (parent.postService("/api/services/light/turn_on", ["entity_id": device.deviceNetworkId])) {
     	sendEvent(name: "switch", value: "on")
@@ -100,15 +38,5 @@ def on() {
 def off() {
 	if (parent.postService("/api/services/light/turn_off", ["entity_id": device.deviceNetworkId])) {
     	sendEvent(name: "switch", value: "off")
-    }
-}
-
-def setLevel(percent) {
-	def state = (percent == 0 ? "off" : "on")
-    
-	if (parent.postService("/api/services/light/turn_on", ["entity_id": device.deviceNetworkId, "brightness_pct": percent])) {
-    	sendEvent(name: "level", value: percent)
-    	sendEvent(name: "switch.setLevel", value: percent)
-        sendEvent(name: "switch", value: state)
     }
 }
