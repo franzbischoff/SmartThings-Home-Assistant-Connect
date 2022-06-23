@@ -20,8 +20,6 @@ Currently cover, light, script, and switch device types are supported.
 - **switch** - On and Off.
 - **lock** - Lock and Unlock.
 
-You can use the **smartthings_name** attribute in Home Assistant to set a custom name for your device in SmartThings. Otherwise, **friendly_name** will be used.
-
 ## Installation
 1. Install and publish the Smart App in the Smart App IDE using "Create via code".
 1. Under Settings in the Smart App IDE, add the following App Settings:
